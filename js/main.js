@@ -37,10 +37,18 @@ window.onload = function () {
     var draggie = new Draggabilly( draggableElem, {
       // options...
     });
+    
+    draggie.on( 'pointerDown', function( event, pointer ) {
+      console.log( "donw. ev" + event + " pointer: "+pointer);
+    });
     draggies.push( draggie );
     //console.log( i + ") Draggie element. Details:" + JSON.stringify(draggie));
   }
-  
+
+//  var dra = $('.draggable').data('draggabilly');
+//  // access Draggabilly properties
+//  console.log( 'draggie at ' + dra.position.x + ', ' + dra.position.y );
+
   $('.draggable').click(function(ev) {
       if ($(this).data('color') === 'blue') {
         $(this).addClass('red-solid');
