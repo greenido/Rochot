@@ -1,3 +1,33 @@
+//
+//
+//
+//
+var boardMap = {}; //{key:1, value:10}, {key:2, value:20},
+
+
+var Pos = function(x,y) {
+  this.x = x;
+  this.y = y;
+};
+
+Pos.prototype.getAsStr = function() {
+  return this.x + "," + this.y;
+};
+
+var Ghost = function (id, position, color) {
+  this.id = id;
+  this.position = position;
+  this.color = color;
+};
+
+Ghost.prototype.move = function(toPos) {
+  console.log("moving from: " + this.position + " to: " + toPos);
+};
+
+
+//
+//
+//
 $(document).ready(function() {
   var table = "";
   for (var i=1; i < 7; i++) {
@@ -5,8 +35,9 @@ $(document).ready(function() {
     for (var j=1; j < 7; j++) {
       
       table += " <td id='s-" + i + "-" + j + "'";
-      if ( (i == 1 && j == 1) || (i == 1 && j == 6) ||
-           (i == 6 && j == 1) || (i == 6 && j == 6) ) {
+      boardMap['s-' + i + '-' + j] = "empty";
+      if ( (i === 1 && j === 1) || (i === 1 && j === 6) ||
+           (i === 6 && j === 1) || (i === 6 && j === 6) ) {
         table += " class='target-cell' >";
       }
       else {
@@ -30,39 +61,65 @@ window.onload = function () {
   // get all draggie elements
   var draggableElems = document.querySelectorAll('.draggable');
   // array of Draggabillies
-  var draggies = []
+  var draggies = [];
   // init Draggabillies
   for ( var i=0, len = draggableElems.length; i < len; i++ ) {
     var draggableElem = draggableElems[i];
+    var posX = draggableElem.parentElement.id.substr(2,1);
+    var posY = draggableElem.parentElement.id.substr(4,1);
+    var tPos = new Pos(posX, posY);
+    var ghost = new Ghost(draggableElem.parentElement.id, tPos, draggableElem.getAttribute('data-color'));
+    boardMap[ghost.id] = ghost;
+    
     var draggie = new Draggabilly( draggableElem, {
-      // options...
+      // bla-bla
     });
     
-    draggie.on( 'pointerDown', function( event, pointer ) {
-      console.log( "donw. ev" + event + " pointer: "+pointer);
-    });
     draggies.push( draggie );
+    
+    draggie.on( 'dragStart', function( event, pointer ) {
+        //console.log( "donw. ev" + JSON.stringify(event) + " pointer: " + JSON.stringify(pointer));
+        var x = event.clientX || pointer.clientX; 
+        var y = event.clientY || pointer.clientY;
+        console.log("starting from: " + x + "," + y); //draggableElem.parentElement.id);
+
+      });
+      
+    draggies[i].on( 'dragEnd', function( event, pointer ) {
+        //console.log( "donw. ev" + JSON.stringify(event) + " pointer: " + JSON.stringify(pointer));
+        var x = event.clientX || pointer.clientX; 
+        var y = event.clientY || pointer.clientY;
+        draggableElem.setAttribute('data-pos', x + "," + y);
+        console.log("ending at: " + x + "," + y); //draggableElem.parentElement.id);
+
+      });
     //console.log( i + ") Draggie element. Details:" + JSON.stringify(draggie));
   }
 
-//  var dra = $('.draggable').data('draggabilly');
-//  // access Draggabilly properties
-//  console.log( 'draggie at ' + dra.position.x + ', ' + dra.position.y );
 
   $('.draggable').click(function(ev) {
-      if ($(this).data('color') === 'blue') {
-        $(this).addClass('red-solid');
-        $(this).data('color', 'red');
-        $(this).html("Red");
-        
-      }
-      else {
-        $(this).removeClass('red-solid');
-        $(this).data('color', 'blue');
-        $(this).html("Blue");
-      }
-      $(window).trigger('resize');
-    });
+    if ($(this).data('color') === 'blue') {
+      $(this).addClass('red-solid');
+      $(this).data('color', 'red');
+      $(this).html("R");  
+      var key = $(this).parent()[0].id;
+      var tGhost = boardMap[key];
+      tGhost.color = 'red';
+      console.log ('id: ' + key);
+      boardMap[key, tGhost];
+    }
+    else {
+      $(this).removeClass('red-solid');
+      $(this).data('color', 'blue');
+      $(this).html("B");
+      var key = $(this).parent()[0].id;
+      var tGhost = boardMap[key];
+      tGhost.color = 'blue';
+      console.log ('id: ' + key);
+      boardMap[key, tGhost];
+    }
+    $(window).trigger('resize');
+  });
   
   $("#but-ready").click(function() {
      $('.draggable').unbind("click");

@@ -18,12 +18,16 @@ textarea {
     color: #222;
 }
 
+/* ==========================================================================
+   Author's custom styles
+   ========================================================================== */
+
 .normal-cell {
-  width: 8em;
+  width: 96px;
   background: lightcoral;
-  height: 8em;
-  margin: 1em;
+  height: 96px;
   border: solid;
+  border-width: 2px;
 }
 
 .draggable {
@@ -48,6 +52,9 @@ textarea {
   color: chocolate;
   background-color: darkorange;
   border-radius: 1em;
+  position: fixed;
+  top: 5px;
+  left: 10px;
 }
 
 /*
@@ -56,11 +63,19 @@ textarea {
 }*/
 .draggable.is-dragging { opacity: 0.7; }
 
+#boardgame {
+  position: fixed;
+  top: 100px;
+  left: 10px;
+  border-spacing: 0px;
+}
+
+
+/* ========================================================  */
 
 body {
     font-size: 1em;
     line-height: 1.4;
-    padding-left: 10px;
 }
 
 a {
@@ -100,25 +115,6 @@ fieldset {
 textarea {
     resize: vertical;
 }
-
-/* ==========================================================================
-   Author's custom styles
-   ========================================================================== */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
