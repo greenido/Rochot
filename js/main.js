@@ -2,9 +2,9 @@
 //
 //
 //
-var boardMap = {}; //{key:1, value:10}, {key:2, value:20},
+var boardMap = {}; //{key: div-id, value: ghost obj}
 
-
+//
 var Pos = function(x,y) {
   this.x = x;
   this.y = y;
@@ -14,6 +14,7 @@ Pos.prototype.getAsStr = function() {
   return this.x + "," + this.y;
 };
 
+//
 var Ghost = function (id, position, color) {
   this.id = id;
   this.position = position;
@@ -24,9 +25,13 @@ Ghost.prototype.move = function(toPos) {
   console.log("moving from: " + this.position + " to: " + toPos);
 };
 
+//
+function getIdFromCord(pos) {
+  return "s-" + ((Math.floor(pos.x / 100))+1) + "-" + ((Math.floor(pos.y / 100)));
+}
 
 //
-//
+// Start the party
 //
 $(document).ready(function() {
   var table = "";
@@ -90,8 +95,9 @@ window.onload = function () {
         var x = event.clientX || pointer.clientX; 
         var y = event.clientY || pointer.clientY;
         draggableElem.setAttribute('data-pos', x + "," + y);
-        console.log("ending at: " + x + "," + y); //draggableElem.parentElement.id);
-
+        
+        var id = getIdFromCord(new Pos(x,y));
+        console.log("ending at: " + x + "," + y + " id: " + id);
       });
     //console.log( i + ") Draggie element. Details:" + JSON.stringify(draggie));
   }
@@ -105,7 +111,7 @@ window.onload = function () {
       var key = $(this).parent()[0].id;
       var tGhost = boardMap[key];
       tGhost.color = 'red';
-      console.log ('id: ' + key);
+      //console.log ('id: ' + key);
       boardMap[key, tGhost];
     }
     else {
