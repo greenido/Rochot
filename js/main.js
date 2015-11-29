@@ -3,6 +3,7 @@
 //
 //
 var boardMap = {}; //{key: div-id, value: ghost obj}
+var needAfix = false;
 
 //
 var Pos = function(x,y) {
@@ -27,7 +28,7 @@ Ghost.prototype.move = function(toPos) {
 
 //
 function getIdFromCord(pos) {
-  return "s-" + ((Math.floor(pos.x / 100))+1) + "-" + ((Math.floor(pos.y / 100)));
+  return "s-" + ((Math.floor(pos.y / 100)) + "-" + ((Math.floor(pos.x / 100)) +1));
 }
 
 //
@@ -40,7 +41,7 @@ $(document).ready(function() {
     for (var j=1; j < 7; j++) {
       
       table += " <td id='s-" + i + "-" + j + "'";
-      boardMap['s-' + i + '-' + j] = "empty";
+      boardMap['s-' + j + '-' + i] = "empty";
       if ( (i === 1 && j === 1) || (i === 1 && j === 6) ||
            (i === 6 && j === 1) || (i === 6 && j === 6) ) {
         table += " class='target-cell' >";
@@ -82,15 +83,23 @@ window.onload = function () {
     
     draggies.push( draggie );
     
+    var startingX = 0;
+    var startingY = 0;
     draggie.on( 'dragStart', function( event, pointer ) {
         //console.log( "donw. ev" + JSON.stringify(event) + " pointer: " + JSON.stringify(pointer));
-        var x = event.clientX || pointer.clientX; 
-        var y = event.clientY || pointer.clientY;
-        console.log("starting from: " + x + "," + y); //draggableElem.parentElement.id);
+        startingX = event.clientX || pointer.clientX; 
+        startingY = event.clientY || pointer.clientY;
+        console.log("starting from: " + startingX + "," + startingY); //draggableElem.parentElement.id);
 
       });
       
-    draggies[i].on( 'dragEnd', function( event, pointer ) {
+    draggie.on( 'dragEnd', function( event, pointer ) {
+      if (needAfix != false) {
+        if (draggableElem.parentElement.id == needAfix.parentElement.id) {
+          alert ("First fix your last move!");
+          return;
+        }
+      }
         //console.log( "donw. ev" + JSON.stringify(event) + " pointer: " + JSON.stringify(pointer));
         var x = event.clientX || pointer.clientX; 
         var y = event.clientY || pointer.clientY;
@@ -98,6 +107,20 @@ window.onload = function () {
         
         var id = getIdFromCord(new Pos(x,y));
         console.log("ending at: " + x + "," + y + " id: " + id);
+        var tGhost = boardMap[id];
+        if (tGhost !== "empty") {
+          alert("You can't go there!");
+          // TODO
+          needAfix = draggableElem;
+        }
+        else {
+          // update the board
+          var fromId = getIdFromCord(new Pos( startingX , startingY));
+          var tG = boardMap[fromId];
+          boardMap[id] = tG;
+          boardMap[fromId] = "empty";
+          
+        }
       });
     //console.log( i + ") Draggie element. Details:" + JSON.stringify(draggie));
   }
@@ -107,7 +130,7 @@ window.onload = function () {
     if ($(this).data('color') === 'blue') {
       $(this).addClass('red-solid');
       $(this).data('color', 'red');
-      $(this).html("R");  
+      //$(this).html("R");  
       var key = $(this).parent()[0].id;
       var tGhost = boardMap[key];
       tGhost.color = 'red';
@@ -117,14 +140,14 @@ window.onload = function () {
     else {
       $(this).removeClass('red-solid');
       $(this).data('color', 'blue');
-      $(this).html("B");
+      //$(this).html("B");
       var key = $(this).parent()[0].id;
       var tGhost = boardMap[key];
       tGhost.color = 'blue';
-      console.log ('id: ' + key);
+      console.log ('id for blue: ' + key);
       boardMap[key, tGhost];
     }
-    $(window).trigger('resize');
+    //$(window).trigger('resize');
   });
   
   $("#but-ready").click(function() {
